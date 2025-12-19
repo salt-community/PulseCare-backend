@@ -1,4 +1,4 @@
-namespace PulseCare.API.Data;
+namespace PulseCare.API.Data.Enums;
 
 public enum HealthStatType
 {

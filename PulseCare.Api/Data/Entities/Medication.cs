@@ -1,13 +1,18 @@
+using PulseCare.Domain;
+
 namespace PulseCare.API.Data.Entities;
 
 public class Medication
-{
-    public string Id { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string Dosage { get; set; } = string.Empty;
-    public string Frequency { get; set; } = string.Empty;
-    public int TimesPerDay { get; set; }
-    public string StartDate { get; set; } = string.Empty;
-    public string? EndDate { get; set; }
-    public string? Instructions { get; set; }
-}
+    {
+        public Guid Id { get; set; }
+        public required string Name { get; set; }
+        public required string Dosage { get; set; }
+        public required string Frequency { get; set; }
+        public int TimesPerDay { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string? Instructions { get; set; }
+
+        public Guid PatientId { get; set; }
+        public Patient Patient { get; set; }
+    }

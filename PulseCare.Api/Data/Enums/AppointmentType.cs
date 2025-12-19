@@ -1,4 +1,4 @@
-namespace PulseCare.API.Data.Entities;
+namespace PulseCare.API.Data.Enums;
 
 public enum AppointmentType
 {
