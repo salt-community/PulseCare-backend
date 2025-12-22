@@ -4,7 +4,6 @@ using PulseCare.API.Data.Entities.Medical;
 using PulseCare.API.Data.Entities.Users;
 
 namespace PulseCare.API.Context;
-{
     public class PulseCareDbContext : DbContext
     {
         public PulseCareDbContext(DbContextOptions<PulseCareDbContext> options)
@@ -41,10 +40,10 @@ namespace PulseCare.API.Context;
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<EmergencyContact>()
-                .HasOne(ec => ec.Patient)
-                .WithMany(p => p.EmergencyContacts)
-                .HasForeignKey(ec => ec.PatientId)
+          modelBuilder.Entity<Patient>()
+                .HasOne(p => p.EmergencyContact)
+                .WithOne(ec => ec.Patient)
+                .HasForeignKey<EmergencyContact>(ec => ec.PatientId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Appointment>()
@@ -116,4 +115,3 @@ namespace PulseCare.API.Context;
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
-}
