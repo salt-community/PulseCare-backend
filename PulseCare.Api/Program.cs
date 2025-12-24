@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PulseCare.Api.Context;
 using PulseCare.API.Context;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PulseCareDbContext>();
     db.Database.Migrate();
+    SeedData.Initialize(db);
 }
 
 // Configure the HTTP request pipeline.
