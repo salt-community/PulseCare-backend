@@ -208,7 +208,7 @@ namespace PulseCare.Api.Context
                 PatientId = patient1.Id,
                 DoctorId = doctor1.Id,
                 Date = DateTime.UtcNow.AddDays(-3),
-                Time = new TimeSpan(10, 0, 0), // 10:00 AM
+                Time = new TimeSpan(10, 0, 0),
                 Type = AppointmentType.Checkup,
                 Status = AppointmentStatusType.Completed,
                 Comment = "Regular check-up"
@@ -220,7 +220,7 @@ namespace PulseCare.Api.Context
                 PatientId = patient2.Id,
                 DoctorId = doctor2.Id,
                 Date = DateTime.UtcNow.AddDays(1),
-                Time = new TimeSpan(14, 30, 0), // 2:30 PM
+                Time = new TimeSpan(14, 30, 0),
                 Type = AppointmentType.FollowUp,
                 Status = AppointmentStatusType.Scheduled,
                 Comment = "Follow-up on diabetes management"
@@ -256,13 +256,30 @@ namespace PulseCare.Api.Context
             );
             db.SaveChanges();
 
+            // ------------------------- CONVERSATIONS -------------------------
+            var conversation1 = new Conversation
+            {
+                Id = Guid.NewGuid(),
+                PatientId = patient1.Id,
+                DoctorId = doctor1.Id
+            };
+
+            var conversation2 = new Conversation
+            {
+                Id = Guid.NewGuid(),
+                PatientId = patient2.Id,
+                DoctorId = doctor2.Id
+            };
+
+            db.Conversations.AddRange(conversation1, conversation2);
+            db.SaveChanges();
+
             // ------------------------- MESSAGES -------------------------
             db.Messages.AddRange(
                 new Message
                 {
                     Id = Guid.NewGuid(),
-                    PatientId = patient1.Id,
-                    DoctorId = doctor1.Id,
+                    ConversationId = conversation1.Id,
                     Subject = "Medication Question",
                     Content = "Should I take my medication before or after breakfast?",
                     Date = DateTime.UtcNow.AddDays(-1),
@@ -272,8 +289,7 @@ namespace PulseCare.Api.Context
                 new Message
                 {
                     Id = Guid.NewGuid(),
-                    PatientId = patient1.Id,
-                    DoctorId = doctor1.Id,
+                    ConversationId = conversation1.Id,
                     Subject = "Re: Medication Question",
                     Content = "Take it after breakfast.",
                     Date = DateTime.UtcNow,
@@ -283,8 +299,7 @@ namespace PulseCare.Api.Context
                 new Message
                 {
                     Id = Guid.NewGuid(),
-                    PatientId = patient2.Id,
-                    DoctorId = doctor2.Id,
+                    ConversationId = conversation2.Id,
                     Subject = "Appointment Reminder",
                     Content = "Don't forget your follow-up appointment tomorrow.",
                     Date = DateTime.UtcNow.AddHours(-2),
