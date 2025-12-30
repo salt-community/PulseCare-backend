@@ -1,1 +1,1 @@
-public interface IHealthRepository { }
+public interface IHealthStatsRepository { }

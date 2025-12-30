@@ -13,11 +13,11 @@ public class PatientsController : ControllerBase
 
     // GET: /patients
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PatientsDto>>> GetPatients()
+    public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatients()
     {
         var patients = await _patientRepository.GetAllPatientsAsync();
 
-        var patientsDto = patients.Select(p => new PatientsDto
+        var patientsDto = patients.Select(p => new PatientDto
         {
             Name = p.User?.Name,
             Email = p.User?.Email,

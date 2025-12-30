@@ -1,1 +1,1 @@
-public class HealthStatsRepository : IHealthRepository { }
+public class HealthStatsRepository : IHealthStatsRepository { }
