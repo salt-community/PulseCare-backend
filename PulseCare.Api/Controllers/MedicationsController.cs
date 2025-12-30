@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 public class MedicationsController : ControllerBase
 {
-    private readonly IMedicationsRepository _medicationsRepository;
+    private readonly IMedicationRepository _medicationRepository;
 
-    public MedicationsController(IMedicationsRepository medicationsRepository)
+    public MedicationsController(IMedicationRepository medicationRepository)
     {
-        _medicationsRepository = medicationsRepository;
+        _medicationRepository = medicationRepository;
     }
 
     [HttpGet("{patientId}")]
     public async Task<ActionResult<IEnumerable<MedicationDto>>> GetPatientMedications(Guid patientId)
     {
-        var medications = await _medicationsRepository.GetMedicationsById(patientId);
+        var medications = await _medicationRepository.GetMedicationsById(patientId);
 
         if (medications == null)
             return NotFound();

@@ -1,1 +1,0 @@
-public class NotesRepository : INotesRepository { }

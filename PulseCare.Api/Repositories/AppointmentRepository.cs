@@ -1,6 +1,6 @@
 using PulseCare.API.Data.Entities.Medical;
 
-public class AppointmentsRepository : IAppointmentsRepository
+public class AppointmentRepository : IAppointmentRepository
 {
     public Task<IEnumerable<Appointment>> GetAppointmentsById(Guid id)
     {

@@ -4,16 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 public class AppointmentsController : ControllerBase
 {
-    private readonly IAppointmentsRepository _appointmentsRepository;
-    public AppointmentsController(IAppointmentsRepository appointmentsRepository)
+    private readonly IAppointmentRepository _appointmentRepository;
+    public AppointmentsController(IAppointmentRepository appointmentRepository)
     {
-        _appointmentsRepository = appointmentsRepository;
+        _appointmentRepository = appointmentRepository;
     }
 
     [HttpGet("{patientId}")]
     public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetPatientAppointments(Guid patientId)
     {
-        var appointments = await _appointmentsRepository.GetAppointmentsById(patientId);
+        var appointments = await _appointmentRepository.GetAppointmentsById(patientId);
 
         if (appointments == null)
             return NotFound();

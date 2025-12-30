@@ -1,6 +1,5 @@
 using PulseCare.API.Data.Entities.Medical;
-
-public interface IMedicationsRepository
+public interface IMedicationRepository
 {
     Task<IEnumerable<Medication>> GetMedicationsById(Guid id);
 }
