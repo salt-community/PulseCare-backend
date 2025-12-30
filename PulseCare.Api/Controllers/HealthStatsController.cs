@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PulseCare.API.Context;
 using PulseCare.API.Data.Enums;
@@ -25,14 +24,16 @@ public class HealthStatsController : ControllerBase
 
         foreach (var item in healthData)
         {
-            response.Add(new HealthStatResponseDto
-                (
-                    item.Type,
-                    item.Value,
-                    item.Unit,
-                    item.Date,
-                    item.Status
-                )
+            response.Add(
+                new HealthStatResponseDto
+                    (
+                        item.Id,
+                        item.Type,
+                        item.Value,
+                        item.Unit,
+                        item.Date,
+                        item.Status
+                    )
             );
         }
 
@@ -42,10 +43,13 @@ public class HealthStatsController : ControllerBase
 
 public record HealthStatResponseDto
 (
+    Guid Id,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))]
     HealthStatType Type,
     string Value,
     string Unit,
     DateTime Date,
+
     [property: JsonConverter(typeof(JsonStringEnumConverter))]
     HealthStatusType Status
 );
