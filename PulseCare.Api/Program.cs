@@ -9,6 +9,11 @@ builder.Services.AddSwaggerGen();
 
 // Add repositories to the container.
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
+builder.Services.AddScoped<IHealthRepository, HealthStatsRepository>();
+builder.Services.AddScoped<IMedicationsRepository, MedicationsRepository>();
+builder.Services.AddScoped<IMessagesRepository, MessagesRepository>();
+builder.Services.AddScoped<INotesRepository, NotesRepository>();
 
 builder.Services.AddDbContext<PulseCareDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
