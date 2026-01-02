@@ -8,6 +8,7 @@ using PulseCare.API.Data.Enums;
 public class AppointmentsController : ControllerBase
 {
     private readonly IAppointmentRepository _appointmentRepository;
+
     public AppointmentsController(IAppointmentRepository appointmentRepository)
     {
         _appointmentRepository = appointmentRepository;
