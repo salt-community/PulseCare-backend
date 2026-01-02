@@ -6,4 +6,5 @@ public interface IMedicationRepository
     Task<Medication> CreateMedicationAsync(Medication medication);
     Task<Medication?> GetMedicationByIdAsync(Guid medicationId);
     Task<Medication?> UpdateMedicationAsync(Guid medicationId, Medication medication);
+    Task<bool> DeleteMedicationAsync(Guid medicationId);
 }

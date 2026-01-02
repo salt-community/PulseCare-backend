@@ -44,4 +44,16 @@ public class MedicationRepository : IMedicationRepository
         await _context.SaveChangesAsync();
         return existingMedication;
     }
+
+    public async Task<bool> DeleteMedicationAsync(Guid medicationId)
+    {
+        var medication = await _context.Medications.FindAsync(medicationId);
+
+        if (medication == null)
+            return false;
+
+        _context.Medications.Remove(medication);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }
