@@ -9,4 +9,9 @@ public class UserRepository : IUserRepository
     {
         throw new NotImplementedException();
     }
+
+    public bool ExistsAsync(string userId)
+    {
+        throw new NotImplementedException();
+    }
 }
