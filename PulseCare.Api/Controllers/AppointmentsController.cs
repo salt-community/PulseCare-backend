@@ -4,7 +4,7 @@ using PulseCare.API.Data.Entities.Medical;
 using PulseCare.API.Data.Enums;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AppointmentsController : ControllerBase
 {
     private readonly IAppointmentRepository _appointmentRepository;
@@ -27,7 +27,6 @@ public class AppointmentsController : ControllerBase
             DoctorName = a.Doctor?.User?.Name,
             Reason = a.Comment,
             Notes = a.AppointmentNotes
-                       .Where(n => n.AppointmentId == a.Id)
                        .Select(n => n.Content)
                        .ToList()
         }).ToList();
@@ -40,7 +39,7 @@ public class AppointmentsController : ControllerBase
     {
         var appointments = await _appointmentRepository.GetAppointmentsById(patientId);
 
-        if (appointments == null)
+        if (!appointments.Any())
             return NotFound();
 
         var appointmentsDto = appointments.Select(a => new AppointmentDto
@@ -52,7 +51,6 @@ public class AppointmentsController : ControllerBase
             DoctorName = a.Doctor?.User?.Name,
             Reason = a.Comment,
             Notes = a.AppointmentNotes
-                       .Where(n => n.AppointmentId == a.Id)
                        .Select(n => n.Content)
                        .ToList()
         }).ToList();
