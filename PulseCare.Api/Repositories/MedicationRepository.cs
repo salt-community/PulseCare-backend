@@ -16,4 +16,10 @@ public class MedicationRepository : IMedicationRepository
                     .ToList();
     }
 
+    public async Task<Medication> CreateMedicationAsync(Medication medication)
+    {
+        await _context.Medications.AddAsync(medication);
+        await _context.SaveChangesAsync();
+        return medication;
+    }
 }
