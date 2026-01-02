@@ -8,7 +8,7 @@ public class MedicationRepository : IMedicationRepository
     {
         _context = context;
     }
-    public async Task<IEnumerable<Medication>> GetMedicationsByIdAsync(Guid id)
+    public async Task<IEnumerable<Medication>> GetMedicationsByPatientIdAsync(Guid id)
     {
         return _context.Medications
                     .Where(m => m.PatientId == id)
