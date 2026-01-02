@@ -7,7 +7,7 @@ using Repositories.IRepositories;
 namespace Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
@@ -21,14 +21,14 @@ public class UsersController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Sync()
     {
-        var clerkUserId = User.FindFirst("sub")?.Value;
+        var clerkUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(clerkUserId))
         {
             return Unauthorized();
         }
 
-        var exists = _userRepository.ExistsAsync(clerkUserId);
+        var exists = await _userRepository.ExistsAsync(clerkUserId);
 
         if (!exists)
         {
@@ -41,13 +41,14 @@ public class UsersController : ControllerBase
 
     private User CreateUserFromToken(string clerkUserId)
     {
+        var name = User.FindFirst("name")?.Value;
+        var email = User.FindFirst("email")?.Value;
+
         return new User
         {
-            // Id = clerkUserId, -> ändra user id till string? 
-            Name = User.FindFirst(ClaimTypes.GivenName)?.Value,
-            Email = User.FindFirst(ClaimTypes.Email)?.Value
+            ClerkId = clerkUserId,
+            Name = name,
+            Email = email
         };
     }
-
-
 }

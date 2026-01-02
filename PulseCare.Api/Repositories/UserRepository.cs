@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using PulseCare.API.Context;
 using PulseCare.API.Data.Entities.Users;
 using Repositories.IRepositories;
 
@@ -5,13 +7,21 @@ namespace Repositories;
 
 public class UserRepository : IUserRepository
 {
-    public Task CreateAsync(User request)
+    private readonly PulseCareDbContext _context;
+
+    public UserRepository(PulseCareDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
-    public bool ExistsAsync(string userId)
+    public async Task CreateAsync(User request)
     {
-        throw new NotImplementedException();
+        _context.Users.Add(request);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> ExistsAsync(string userId)
+    {
+        return await _context.Users.AnyAsync(u => u.ClerkId == userId);
     }
 }
