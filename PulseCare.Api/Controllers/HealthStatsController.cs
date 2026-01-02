@@ -1,7 +1,4 @@
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
-using PulseCare.API.Context;
-using PulseCare.API.Data.Enums;
 
 namespace PulseCare.Api.Controllers;
 
@@ -9,47 +6,16 @@ namespace PulseCare.Api.Controllers;
 [ApiController]
 public class HealthStatsController : ControllerBase
 {
-    private readonly PulseCareDbContext _context;
-    public HealthStatsController(PulseCareDbContext context)
+    private readonly HealthStatsRepository _repository;
+    public HealthStatsController(HealthStatsRepository repository)
     {
-        _context = context;
+        _repository = repository;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<List<HealthStatResponseDto>>> GetHealthStats(Guid id)
+    public async Task<ActionResult<List<HealthStatsDto>>> GetHealthStats(Guid id)
     {
-        var healthData = _context.HealthStats.Where(h => h.PatientId == id);
-
-        var response = new List<HealthStatResponseDto>();
-
-        foreach (var item in healthData)
-        {
-            response.Add(
-                new HealthStatResponseDto
-                    (
-                        item.Id,
-                        item.Type,
-                        item.Value,
-                        item.Unit,
-                        item.Date,
-                        item.Status
-                    )
-            );
-        }
-
-        return response;
+        return await _repository.GetHealthStatsAsync(id);
     }
 }
 
-public record HealthStatResponseDto
-(
-    Guid Id,
-    [property: JsonConverter(typeof(JsonStringEnumConverter))]
-    HealthStatType Type,
-    string Value,
-    string Unit,
-    DateTime Date,
-
-    [property: JsonConverter(typeof(JsonStringEnumConverter))]
-    HealthStatusType Status
-);

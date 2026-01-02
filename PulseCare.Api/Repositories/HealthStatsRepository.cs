@@ -1,0 +1,34 @@
+using Microsoft.AspNetCore.Mvc;
+using PulseCare.API.Context;
+
+public class HealthStatsRepository : IHealthStatsRepository
+{
+    private readonly PulseCareDbContext _context;
+    public HealthStatsRepository(PulseCareDbContext context)
+    {
+        _context = context;
+    }
+    public async Task<ActionResult<List<HealthStatsDto>>> GetHealthStatsAsync(Guid id)
+    {
+        var healthData = _context.HealthStats.Where(h => h.PatientId == id);
+
+        var response = new List<HealthStatsDto>();
+
+        foreach (var item in healthData)
+        {
+            response.Add(
+                new HealthStatsDto
+                    (
+                        item.Id,
+                        item.Type,
+                        item.Value,
+                        item.Unit,
+                        item.Date,
+                        item.Status
+                    )
+            );
+        }
+
+        return response;
+    }
+}
