@@ -17,7 +17,7 @@ public class MedicationsController : ControllerBase
     [HttpGet("{patientId}")]
     public async Task<ActionResult<IEnumerable<MedicationDto>>> GetPatientMedications(Guid patientId)
     {
-        var medications = await _medicationRepository.GetMedicationsByIdAsync(patientId);
+        var medications = await _medicationRepository.GetMedicationsByPatientIdAsync(patientId);
 
         if (medications == null)
             return NotFound();
