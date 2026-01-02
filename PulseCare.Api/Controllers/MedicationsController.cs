@@ -99,6 +99,17 @@ public class MedicationsController : ControllerBase
             updatedMedication.StartDate
         ));
     }
+
+    [HttpDelete("{medicationId}")]
+    public async Task<ActionResult> DeleteMedication(Guid medicationId)
+    {
+        var deleted = await _medicationRepository.DeleteMedicationAsync(medicationId);
+
+        if (!deleted)
+            return NotFound();
+
+        return NoContent();
+    }
 }
 
 
