@@ -19,11 +19,6 @@ public class PatientsController : ControllerBase
     {
         var patients = await _patientRepository.GetAllPatientsAsync();
 
-        foreach (var patient in patients)
-        {
-            System.Console.WriteLine($"{patient.Id}");
-        }
-
         var patientsDto = patients.Select(p => new PatientDto
         {
             Name = p.User?.Name,
