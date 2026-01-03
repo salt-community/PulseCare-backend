@@ -21,6 +21,7 @@ public class AppointmentsController : ControllerBase
 
         var appointmentsDto = appointments.Select(a => new AppointmentDto
         {
+            Id = a.Id,
             Date = a.Date,
             Time = a.Time.ToString(@"hh\:mm"),
             Type = a.Type.ToString(),
