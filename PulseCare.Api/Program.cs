@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PulseCare.API.Context;
+using Repositories;
+using Repositories.IRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -16,6 +18,7 @@ builder.Services.AddScoped<IHealthStatRepository, HealthStatRepository>();
 builder.Services.AddScoped<IMedicationRepository, MedicationRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<INoteRepository, NoteRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddDbContext<PulseCareDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
