@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class PatientsController : ControllerBase
 {
     private readonly IPatientRepository _patientRepository;
@@ -16,6 +18,11 @@ public class PatientsController : ControllerBase
     public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatients()
     {
         var patients = await _patientRepository.GetAllPatientsAsync();
+
+        foreach (var patient in patients)
+        {
+            System.Console.WriteLine($"{patient.Id}");
+        }
 
         var patientsDto = patients.Select(p => new PatientDto
         {
