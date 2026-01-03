@@ -6,6 +6,7 @@ public class AppointmentDto
     public string? Type { get; set; }
     public string? Status { get; set; }
     public string? DoctorName { get; set; }
+    public string? PatientName { get; set; }
     public string? Reason { get; set; }
     public List<string> Notes { get; set; } = new();
 }

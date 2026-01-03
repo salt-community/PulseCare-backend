@@ -27,6 +27,7 @@ public class AppointmentsController : ControllerBase
             Type = a.Type.ToString(),
             Status = a.Status.ToString(),
             DoctorName = a.Doctor?.User?.Name,
+            PatientName = a.Patient?.User?.Name,
             Reason = a.Comment,
             Notes = a.AppointmentNotes
                        .Select(n => n.Content)
