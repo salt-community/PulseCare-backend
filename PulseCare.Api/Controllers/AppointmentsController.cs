@@ -17,7 +17,7 @@ public class AppointmentsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetAllAppointments()
     {
-        var appointments = await _appointmentRepository.GetAllAppointments();
+        var appointments = await _appointmentRepository.GetAllAppointmentsAsync();
 
         var appointmentsDto = appointments.Select(a => new AppointmentDto
         {
@@ -39,10 +39,7 @@ public class AppointmentsController : ControllerBase
     [HttpGet("{patientId}")]
     public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetPatientAppointments(Guid patientId)
     {
-        var appointments = await _appointmentRepository.GetAppointmentsById(patientId);
-
-        if (!appointments.Any())
-            return NotFound();
+        var appointments = await _appointmentRepository.GetAppointmentsByPatientIdAsync(patientId);
 
         var appointmentsDto = appointments.Select(a => new AppointmentDto
         {
@@ -75,7 +72,7 @@ public class AppointmentsController : ControllerBase
             Comment = dto.Reason
         };
 
-        var created = await _appointmentRepository.CreateAppointment(appointment);
+        var created = await _appointmentRepository.CreateAppointmentAsync(appointment);
 
         var resultDto = new AppointmentDto
         {
@@ -94,7 +91,7 @@ public class AppointmentsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateAppointment(Guid id, UpdateAppointmentDto dto)
     {
-        var appointment = await _appointmentRepository.GetAppointmentById(id);
+        var appointment = await _appointmentRepository.GetAppointmentByIdAsync(id);
         if (appointment == null) 
             return NotFound();
 
@@ -104,14 +101,14 @@ public class AppointmentsController : ControllerBase
         appointment.Status = dto.Status;
         appointment.Comment = dto.Reason;
 
-        await _appointmentRepository.UpdateAppointment(appointment);
-        return NoContent();
+        await _appointmentRepository.UpdateAppointmentAsync(appointment);
+        return Ok(dto);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAppointment(Guid id)
     {
-        var result = await _appointmentRepository.DeleteAppointment(id);
+        var result = await _appointmentRepository.DeleteAppointmentAsync(id);
 
         if (!result)
             return NotFound();
@@ -119,4 +116,3 @@ public class AppointmentsController : ControllerBase
         return NoContent();
     }
 }
-
