@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PulseCare.API.Context;
-using Repositories;
-using Repositories.IRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();

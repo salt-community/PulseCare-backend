@@ -1,9 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PulseCare.API.Context;
 using PulseCare.API.Data.Entities.Users;
-using Repositories.IRepositories;
-
-namespace Repositories;
 
 public class UserRepository : IUserRepository
 {
