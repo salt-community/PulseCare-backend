@@ -11,7 +11,6 @@ namespace Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
-    public record UserRequestDto(string Name, string Email);
 
     public UsersController(IUserRepository userRepository)
     {
