@@ -20,26 +20,69 @@ public class UsersController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Sync(UserRequestDto request)
     {
-        var clerkUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(clerkUserId))
+        var clerkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(clerkId))
         {
             return Unauthorized();
         }
 
-        var exists = await _userRepository.ExistsAsync(clerkUserId);
-
-        if (!exists)
+        var user = await _userRepository.GetUserAsync(clerkId);
+        if (user == null)
         {
-            var newUser = CreateUser(clerkUserId, request);
-            await _userRepository.CreateAsync(newUser);
+            user = CreateUser(clerkId, request);
+            await _userRepository.AddUserAsync(user);
+        }
+
+        var userRole = User.FindFirst(ClaimTypes.Role);
+        if (userRole?.Value == "admin")
+        {
+            await EnsureAdminUser(user);
+        }
+        else
+        {
+            await EnsurePatientUser(user);
         }
 
         return NoContent();
     }
 
+    private async Task EnsureAdminUser(User user)
+    {
+        if (await IsExistingAdmin(user))
+        {
+            return;
+        }
+
+        var patient = await _userRepository.GetPatientFromUserAsync(user.Id);
+        if (patient != null)
+        {
+            await _userRepository.RemovePatientAsync(patient);
+        }
+
+        var newAdmin = new Doctor { User = user };
+
+        await _userRepository.AddAdminAsync(newAdmin);
+    }
+
+
+    private async Task EnsurePatientUser(User user)
+    {
+        if (await IsExistingUser(user))
+        {
+            return;
+        }
+
+        var newPatient = new Patient { User = user };
+
+        await _userRepository.AddPatientAsync(newPatient);
+    }
+
+    private async Task<bool> IsExistingAdmin(User user) => await _userRepository.IsExistingAdminAsync(user.Id);
+    private async Task<bool> IsExistingUser(User user) => await _userRepository.IsExistingPatientAsync(user.ClerkId ?? "");
+
     private User CreateUser(string clerkUserId, UserRequestDto request)
     {
+
         return new User
         {
             ClerkId = clerkUserId,
