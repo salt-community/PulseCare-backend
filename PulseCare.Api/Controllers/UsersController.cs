@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PulseCare.API.Data.Entities.Users;
-using Repositories.IRepositories;
 
 namespace Controllers;
 
