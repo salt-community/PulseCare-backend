@@ -59,7 +59,7 @@ public class UsersController : ControllerBase
             await _userRepository.RemovePatientAsync(patient);
         }
 
-        var newAdmin = new Doctor { User = user };
+        var newAdmin = new Doctor { User = user, Specialty = "General" };
 
         await _userRepository.AddAdminAsync(newAdmin);
     }
