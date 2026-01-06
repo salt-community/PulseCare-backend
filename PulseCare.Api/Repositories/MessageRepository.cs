@@ -36,18 +36,20 @@ public class MessageRepository : IMessageRepository
             .OrderBy(m => m.Date)
             .ToListAsync();
     }
-
-    public async Task<bool> MarkMessageAsReadAsync(Guid messageId, Guid conversationId)
+    public async Task<bool> MarkAllAsReadAsync(Guid conversationId)
     {
-        var message = await _context.Messages
-            .FirstOrDefaultAsync(m => m.Id == messageId && m.ConversationId == conversationId);
+        var messages = await _context.Messages
+            .Where(m => m.ConversationId == conversationId && !m.Read)
+            .ToListAsync();
 
-        if (message is null)
-            return false;
+        if (messages.Count == 0)
+            return true;
 
-        message.Read = true;
+        foreach (var msg in messages)
+            msg.Read = true;
+
         await _context.SaveChangesAsync();
-
         return true;
     }
+
 }
