@@ -22,15 +22,15 @@ public class PulseCareHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, conversationId.ToString());
     }
 
-    public async Task MarkAsRead(Guid conversationId, Guid messageId)
+    public async Task MarkAllAsRead(Guid conversationId)
     {
         await Clients.Group(conversationId.ToString())
-            .SendAsync("MessageRead", messageId);
+            .SendAsync("ConversationRead", conversationId);
     }
 
-    public async Task Typing(Guid conversationId)
+    public async Task Typing(Guid conversationId, Guid userId)
     {
-        await Clients.Group(conversationId.ToString())
-            .SendAsync("Typing", Context.UserIdentifier);
+        await Clients.OthersInGroup(conversationId.ToString())
+            .SendAsync("Typing", userId);
     }
 }
