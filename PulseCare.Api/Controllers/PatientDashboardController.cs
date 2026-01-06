@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PulseCare.API.Data.Entities.Users;
+using PulseCare.API.Data.Enums;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -34,14 +35,24 @@ public class PatientDashboardController : ControllerBase
         if (patient == null)
         {
             var user = await _userRepository.GetUserAsync(clerkUserId);
+
             if (user == null)
             {
-                return NotFound("User not found for this ClerkId");
+                user = new User
+                {
+                    ClerkId = clerkUserId,
+                    Email = User.FindFirst(ClaimTypes.Email)?.Value ?? "",
+                    Name = User.FindFirst(ClaimTypes.Name)?.Value ?? "Patient",
+                    Role = UserRoleType.Patient
+                };
+
+                await _userRepository.AddUserAsync(user);
             }
 
             var newPatient = new Patient
             {
-                UserId = user.Id
+                UserId = user.Id,
+                CreatedAt = DateTime.UtcNow
             };
 
             await _userRepository.AddPatientAsync(newPatient);
