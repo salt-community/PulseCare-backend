@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
 [ApiController]
-[Route("api/conversations")]
+[Route("api/conversations/{conversationId:guid}/messages")]
 [Authorize]
 public class MessagesController : ControllerBase
 {
@@ -18,10 +18,9 @@ public class MessagesController : ControllerBase
         _hub = hub;
     }
 
-    [HttpPost("{conversationId:guid}/messages")]
-    public async Task<IActionResult> SendMessage(
-        Guid conversationId,
-        [FromBody] SendMessageRequest request)
+
+    [HttpPost]
+    public async Task<IActionResult> SendMessage(Guid conversationId, [FromBody] SendMessageRequest request)
     {
         var conversation = await _conversationRepository.GetByIdAsync(conversationId);
         if (conversation is null)
@@ -35,7 +34,6 @@ public class MessagesController : ControllerBase
             request.Content,
             request.FromPatient
         );
-
         var dto = new MessageDto(
             messageEntity.Id,
             messageEntity.Subject,
@@ -46,13 +44,13 @@ public class MessagesController : ControllerBase
             messageEntity.ConversationId
         );
 
-        await _hub.Clients.Group(conversationId.ToString())
-            .SendAsync("ReceiveMessage", dto);
+        await _hub.Clients.Group(conversationId.ToString()).SendAsync("ReceiveMessage", dto);
 
+        await _hub.Clients.All.SendAsync("ReceiveMessage", dto);
         return Ok(dto);
     }
 
-    [HttpGet("{conversationId:guid}/messages")]
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessages(Guid conversationId)
     {
         var messages = await _messageRepository.GetMessagesAsync(conversationId);
@@ -73,50 +71,16 @@ public class MessagesController : ControllerBase
         return Ok(dto);
     }
 
-    [HttpPost("start")]
-    public async Task<IActionResult> StartConversation(
-        [FromBody] StartConversationRequest request)
+    [HttpPut("read-all")]
+    public async Task<IActionResult> MarkAllAsRead(Guid conversationId)
     {
-        var conversation = await _conversationRepository
-            .GetOrCreateForPatientAndDoctorAsync(request.PatientId, request.DoctorId);
-
-        var messageEntity = await _messageRepository.CreateMessageAsync(
-            conversation.Id,
-            request.Subject,
-            request.Content,
-            request.FromPatient
-        );
-
-        var dto = new MessageDto(
-            messageEntity.Id,
-            messageEntity.Subject,
-            messageEntity.Content,
-            messageEntity.Date,
-            messageEntity.Read,
-            messageEntity.FromPatient,
-            messageEntity.ConversationId
-        );
-
-        await _hub.Clients.Group(conversation.Id.ToString())
-            .SendAsync("ReceiveMessage", dto);
-
-        return Ok(new
-        {
-            conversationId = conversation.Id,
-            message = dto
-        });
-    }
-
-    [HttpPut("{conversationId:guid}/messages/{messageId:guid}/read")]
-    public async Task<IActionResult> MarkMessageAsRead(Guid conversationId, Guid messageId)
-    {
-        var success = await _messageRepository.MarkMessageAsReadAsync(messageId, conversationId);
+        var success = await _messageRepository.MarkAllAsReadAsync(conversationId);
 
         if (!success)
             return NotFound();
 
         await _hub.Clients.Group(conversationId.ToString())
-            .SendAsync("MessageRead", messageId);
+            .SendAsync("ConversationRead", conversationId);
 
         return NoContent();
     }
