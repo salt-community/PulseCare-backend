@@ -63,6 +63,32 @@ public class AppointmentsController : ControllerBase
 
         return Ok(appointmentsDto);
     }
+    [Authorize]
+    [HttpGet("all/patient")]
+    public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetAllPatientAppointments()
+    {
+        var clerkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(clerkId))
+        {
+            return Unauthorized();
+        }
+
+        var patientAppointments = await _appointmentRepository.GetPatientAppointmentsByClerkId(clerkId);
+
+        return Ok(patientAppointments.Select(a => new AppointmentDto
+        {
+            Date = a.Date,
+            Time = a.Time.ToString(@"hh\:mm"),
+            Type = a.Type.ToString(),
+            Status = a.Status.ToString(),
+            DoctorName = a.Doctor?.User?.Name,
+            Reason = a.Comment,
+            Notes = a.AppointmentNotes
+                       .Select(n => n.Content)
+                       .ToList()
+        }).ToList());
+    }
 
     [Authorize(Roles = "admin")]
     [HttpGet("all")]
