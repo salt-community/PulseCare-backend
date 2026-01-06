@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PulseCare.API.Context;
@@ -19,9 +20,12 @@ builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 builder.Services.AddScoped<INoteRepository, NoteRepository>();
 
 builder.Services.AddDbContext<PulseCareDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddSignalR(); builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+// SignalR
+// builder.Services.AddSignalR(); builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 //Auth
 var issuer = builder.Configuration["Jwt:Issuer"];
@@ -42,10 +46,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         options.Events = new JwtBearerEvents
         {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/pulsecarehub"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            },
             OnTokenValidated = context =>
             {
                 var claimsIdentity = context?.Principal?.Identity as ClaimsIdentity;
-
                 var role = context?.Principal?.FindFirst("role")?.Value;
 
                 if (!string.IsNullOrEmpty(role))
