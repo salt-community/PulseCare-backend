@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PulseCare.API.Data.Dtos;
@@ -59,6 +60,33 @@ public class AppointmentsController : ControllerBase
         }).ToList();
 
         return Ok(appointmentsDto);
+    }
+
+    [Authorize(Roles = "admin")]
+    [HttpGet("all")]
+    public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetAllDoctorsAppointments()
+    {
+        var clerkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(clerkId))
+        {
+            return Unauthorized();
+        }
+
+        var doctorsAppointments = await _appointmentRepository.GetDoctorAppointmentsByClerkId(clerkId);
+
+        return Ok(doctorsAppointments.Select(a => new AppointmentDto
+        {
+            Date = a.Date,
+            Time = a.Time.ToString(@"hh\:mm"),
+            Type = a.Type.ToString(),
+            Status = a.Status.ToString(),
+            DoctorName = a.Doctor?.User?.Name,
+            Reason = a.Comment,
+            Notes = a.AppointmentNotes
+                       .Select(n => n.Content)
+                       .ToList()
+        }).ToList());
     }
 
     [Authorize(Roles = "admin")]
