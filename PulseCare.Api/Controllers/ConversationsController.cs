@@ -78,72 +78,56 @@ public class ConversationsController : ControllerBase
         return Ok(dtos);
     }
 
-
     [HttpPost("start")]
     [Authorize]
     public async Task<IActionResult> StartConversation([FromBody] StartConversationRequest request)
     {
-
         var clerkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        Console.WriteLine($"DEBUG: ClerkId from Token: {clerkId}");
         if (string.IsNullOrEmpty(clerkId)) return Unauthorized();
 
-        var user = await _userRepository.GetUserAsync(clerkId);
-        if (user == null)
-        {
-            Console.WriteLine($"DEBUG: User with ClerkId {clerkId} not found in DB");
-            return NotFound("User not found.");
-        }
-        Console.WriteLine($"DEBUG: Found User: {user.Id}, Role: {user.Role}");
-
-        var doctor = await _userRepository.GetDoctorFromUserAsync(user.Id);
-        if (doctor == null)
-        {
-            return BadRequest("Doctor not found");
-        }
-
+        var currentUser = await _userRepository.GetUserAsync(clerkId);
+        if (currentUser == null) return NotFound("User not found in database.");
 
         Guid finalPatientId;
         Guid finalDoctorId;
 
-        if (user.Role == UserRoleType.Patient)
+        if (currentUser.Role == UserRoleType.Patient)
         {
-            var patient = await _userRepository.GetPatientFromUserAsync(user.Id);
-            if (patient == null)
-            {
-                Console.WriteLine($"DEBUG: Patient profile missing for UserId: {user.Id}");
-                return BadRequest("Patient profile not found.");
-            }
+            var patientProfile = await _userRepository.GetPatientFromUserAsync(currentUser.Id);
+            if (patientProfile == null) return BadRequest("Patient profile missing.");
+            finalPatientId = patientProfile.Id;
 
-            if (request.DoctorId == null)
+            if (Guid.TryParse(request.DoctorId, out Guid docGuid))
             {
-                Console.WriteLine("DEBUG: Error - Patient is trying to start chat but DoctorId is missing in request");
-                return BadRequest("DoctorId is required.");
+                finalDoctorId = docGuid;
             }
-
-            finalPatientId = patient.Id;
-            finalDoctorId = request.DoctorId.Value;
+            else
+            {
+                var docUser = await _userRepository.GetUserAsync(request.DoctorId!);
+                var docProfile = await _userRepository.GetDoctorFromUserAsync(docUser.Id);
+                finalDoctorId = docProfile.Id;
+            }
         }
-        else if (user.Role == UserRoleType.Doctor)
+        else if (currentUser.Role == UserRoleType.Doctor)
         {
-            if (request.PatientId == null)
-            {
-                Console.WriteLine("DEBUG: Error - Doctor is trying to start chat but PatientId is missing in request");
-                return BadRequest("PatientId is required.");
-            }
+            var doctorProfile = await _userRepository.GetDoctorFromUserAsync(currentUser.Id);
+            if (doctorProfile == null) return BadRequest("Doctor profile missing.");
+            finalDoctorId = doctorProfile.Id;
 
-            finalDoctorId = doctor.Id;
-            finalPatientId = request.PatientId.Value;
+            var targetPatientUser = await _userRepository.GetUserAsync(request.PatientId!);
+            if (targetPatientUser == null) return BadRequest("Target patient user not found.");
+
+            var targetPatientProfile = await _userRepository.GetPatientFromUserAsync(targetPatientUser.Id);
+            if (targetPatientProfile == null) return BadRequest("Target patient profile missing.");
+
+            finalPatientId = targetPatientProfile.Id;
         }
         else
         {
-            Console.WriteLine($"DEBUG: Error - Unsupported role: {user.Role}");
             return BadRequest("Unsupported role.");
         }
 
-
-        var conversation = await _conversationRepository
-            .GetOrCreateForPatientAndDoctorAsync(finalPatientId, finalDoctorId);
+        var conversation = await _conversationRepository.GetOrCreateForPatientAndDoctorAsync(finalPatientId, finalDoctorId);
 
         var messageEntity = await _messageRepository.CreateMessageAsync(
             conversation.Id,
@@ -162,8 +146,7 @@ public class ConversationsController : ControllerBase
             messageEntity.ConversationId
         );
 
-        await _hub.Clients.Group(conversation.Id.ToString())
-            .SendAsync("ReceiveMessage", dto);
+        await _hub.Clients.Group(conversation.Id.ToString()).SendAsync("ReceiveMessage", dto);
 
         return Ok(new StartConversationResponse(conversation.Id, dto));
     }
