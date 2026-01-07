@@ -34,10 +34,10 @@ public class NotesController : ControllerBase
 
             return new NoteDto
             {
-                NoteId = n.Id,
+                Id = n.Id,
                 Title = n.Title,
-                CreatedAt = n.Date,
-                AuthorName = n.Doctor?.User?.Name ?? "Unknown doctor",
+                Date = n.Date,
+                DoctorName = n.Doctor?.User?.Name ?? "Unknown doctor",
                 Content = n.Content,
                 Diagnosis = n.Diagnosis,
                 AppointmentDetails = $"From {appointmentType} appointment on {date}"
