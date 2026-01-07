@@ -1,18 +1,30 @@
+using Microsoft.EntityFrameworkCore;
 using PulseCare.API.Context;
 using PulseCare.API.Data.Entities.Medical;
 
 public class MedicationRepository : IMedicationRepository
 {
     private readonly PulseCareDbContext _context;
+
     public MedicationRepository(PulseCareDbContext context)
     {
         _context = context;
     }
-    public async Task<IEnumerable<Medication>> GetMedicationsByPatientIdAsync(Guid id)
+
+    public async Task<IEnumerable<Medication>> GetMedicationsByPatientIdAsync(Guid patientId)
     {
-        return _context.Medications
-                    .Where(m => m.PatientId == id)
-                    .ToList();
+        return await _context.Medications
+            .Where(m => m.PatientId == patientId)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Medication>> GetMedicationsByClerkIdAsync(string clerkId)
+    {
+        return await _context.Medications
+            .Include(m => m.Patient)
+                .ThenInclude(p => p.User)
+            .Where(m => m.Patient.User.ClerkId == clerkId)
+            .ToListAsync();
     }
 
     public async Task<Medication> CreateMedicationAsync(Medication medication)
