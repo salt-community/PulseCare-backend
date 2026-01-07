@@ -48,10 +48,10 @@ public class ConversationRepository : IConversationRepository
     }
 
 
-    public async Task<List<Conversation>> GetConversationsForDoctorAsync(Guid doctorId)
+    public async Task<List<Conversation>> GetConversationsForDoctorAsync(Guid userId)
     {
         return await _context.Conversations
-            .Where(c => c.DoctorId == doctorId)
+            .Where(c => c.DoctorId == userId)
             .Include(c => c.Messages)
             .ToListAsync();
     }
