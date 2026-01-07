@@ -16,7 +16,7 @@ public static class SeedData
         // ------------------------- USERS -------------------------
         var patientUser1 = new User
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("123e02c2-ebd0-434d-be58-4f6be91711c5"),
             Email = "patient1@example.com",
             Name = "John Doe",
             Role = UserRoleType.Patient,
@@ -34,7 +34,7 @@ public static class SeedData
 
         var doctorUser1 = new User
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.Parse("95ae717f-4a9f-4e7a-8e96-a6b56451d287"),
             Email = "doctor1@example.com",
             Name = "Dr. Sarah Smith",
             Role = UserRoleType.Doctor,
