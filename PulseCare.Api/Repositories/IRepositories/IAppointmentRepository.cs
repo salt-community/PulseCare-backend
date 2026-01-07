@@ -10,4 +10,5 @@ public interface IAppointmentRepository
     Task<bool> DeleteAppointmentAsync(Guid appointmentId);
     Task<IEnumerable<Appointment>> GetDoctorAppointmentsByClerkId(string clerkId);
     Task<IEnumerable<Appointment>> GetPatientAppointmentsByClerkId(string clerkId);
+    Task<List<Appointment>> GetDoctorsAppointmentsAsync(string clerkId);
 }
