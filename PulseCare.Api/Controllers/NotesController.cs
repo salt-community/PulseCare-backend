@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PulseCare.API.Data.Entities.Communication;
 using PulseCare.API.Data.Entities.Users;
 
 namespace Controllers;
@@ -10,10 +11,12 @@ namespace Controllers;
 public class NotesController : ControllerBase
 {
     private readonly INoteRepository _noteRepository;
+    private readonly IUserRepository _userRepository;
 
-    public NotesController(INoteRepository noteRepository)
+    public NotesController(INoteRepository noteRepository, IUserRepository userRepository)
     {
         _noteRepository = noteRepository;
+        _userRepository = userRepository;
     }
 
     [HttpGet]
@@ -47,6 +50,31 @@ public class NotesController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost]
+    public async Task<ActionResult> AddNote(CreateNoteDto request)
+    {
+        var clerkId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(clerkId))
+        {
+            return Unauthorized();
+        }
+
+        var doctor = await _userRepository.GetDoctorWithClerkIdAsync(clerkId);
+        var note = new Note
+        {
+            AppointmentId = Guid.Parse(request.AppointmentId),
+            PatientId = Guid.Parse(request.PatientId),
+            Doctor = doctor,
+            Title = request.Title,
+            Diagnosis = request.Diagnosis,
+            Content = request.Content,
+            Date = DateTime.Now
+        };
+
+        await _noteRepository.AddNoteAsync(note);
+
+        return NoContent();
+    }
 
 
 }

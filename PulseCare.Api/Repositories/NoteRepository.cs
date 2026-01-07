@@ -11,6 +11,12 @@ public class NoteRepository : INoteRepository
         _context = context;
     }
 
+    public async Task AddNoteAsync(Note note)
+    {
+        _context.Notes.Add(note);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<IEnumerable<Note>> GetAllByClerkUserIdAsync(string clerkUserId)
     {
         return await _context.Notes
