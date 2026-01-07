@@ -11,10 +11,20 @@ public class NoteRepository : INoteRepository
         _context = context;
     }
 
-    public async Task AddNoteAsync(Note note)
+    public async Task<bool> AddNoteAsync(Note note)
     {
-        _context.Notes.Add(note);
-        await _context.SaveChangesAsync();
+        try
+        {
+            _context.Notes.Add(note);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
     }
 
     public async Task<IEnumerable<Note>> GetAllByClerkUserIdAsync(string clerkUserId)

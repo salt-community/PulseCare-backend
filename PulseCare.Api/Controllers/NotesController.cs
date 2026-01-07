@@ -2,12 +2,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PulseCare.API.Data.Entities.Communication;
-using PulseCare.API.Data.Entities.Users;
-
-namespace Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class NotesController : ControllerBase
 {
     private readonly INoteRepository _noteRepository;
@@ -71,10 +69,12 @@ public class NotesController : ControllerBase
             Date = DateTime.Now
         };
 
-        await _noteRepository.AddNoteAsync(note);
+        var success = await _noteRepository.AddNoteAsync(note);
+        if (!success)
+        {
+            return BadRequest();
+        }
 
         return NoContent();
     }
-
-
 }
