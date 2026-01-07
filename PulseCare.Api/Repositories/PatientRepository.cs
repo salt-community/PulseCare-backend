@@ -62,7 +62,6 @@ public class PatientRepository : IPatientRepository
     {
         var existingPatient = await _context.Patients
             .Include(p => p.User)
-            .Include(p => p.EmergencyContact)
             .FirstOrDefaultAsync(p => p.Id == updatePatient.Id);
 
         if (existingPatient == null)
@@ -70,7 +69,6 @@ public class PatientRepository : IPatientRepository
 
         existingPatient.User.Name = updatePatient.Name;
         existingPatient.User.Email = updatePatient.Email;
-        existingPatient.EmergencyContact.Phone = updatePatient.Phone;
         existingPatient.DateOfBirth = updatePatient.DateOfBirth;
         existingPatient.BloodType = updatePatient.BloodType;
         await _context.SaveChangesAsync();
