@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
+[Authorize(Roles = "admin")]
 public class PatientsController : ControllerBase
 {
     private readonly IPatientRepository _patientRepository;
@@ -19,6 +21,7 @@ public class PatientsController : ControllerBase
 
         var patientsDto = patients.Select(p => new PatientDto
         {
+            Id = p.Id,
             Name = p.User?.Name,
             Email = p.User?.Email,
             Phone = p.EmergencyContact?.Phone,
@@ -46,7 +49,10 @@ public class PatientsController : ControllerBase
             CreatedAt = patient.CreatedAt,
             BloodType = patient.BloodType,
             Conditions = patient.Conditions.Select(c => c.Name).ToList(),
-            Allergies = patient.Allergies.Select(a => a.Name).ToList()
+            Allergies = patient.Allergies.Select(a => a.Name).ToList(),
+            Medications = patient.Medications.ToList(),
+            Appointments = patient.Appointments.ToList(),
+            HealthStats = patient.HealthStats.ToList()
         };
 
         return Ok(overviewDto);
