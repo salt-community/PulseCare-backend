@@ -56,7 +56,7 @@ public class PatientRepository : IPatientRepository
             .FirstOrDefaultAsync(p => p.User.ClerkId == clerkId);
     }
 
-    public async Task<Patient?> UpdatePatientAsync(UpdatePatientRequestDto updatePatient)
+    public async Task<Patient?> UpdatePatientAsync(UpdatePatientDto updatePatient)
     {
         var existingPatient = await _context.Patients.FindAsync(updatePatient.Id);
 
