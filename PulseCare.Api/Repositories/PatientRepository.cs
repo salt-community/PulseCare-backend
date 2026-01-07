@@ -58,7 +58,10 @@ public class PatientRepository : IPatientRepository
 
     public async Task<Patient?> UpdatePatientAsync(UpdatePatientDto updatePatient)
     {
-        var existingPatient = await _context.Patients.FindAsync(updatePatient.Id);
+        var existingPatient = await _context.Patients
+            .Include(p => p.User)
+            .Include(p => p.EmergencyContact)
+            .FirstOrDefaultAsync(p => p.Id == updatePatient.Id);
 
         if (existingPatient == null)
             return null;
