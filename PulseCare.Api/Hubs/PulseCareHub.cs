@@ -12,12 +12,12 @@ public class PulseCareHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task JoinConversation(Guid conversationId)
+    public async Task JoinConversation(string conversationId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
     }
 
-    public async Task LeaveConversation(Guid conversationId)
+    public async Task LeaveConversation(string conversationId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, conversationId.ToString());
     }
@@ -28,7 +28,7 @@ public class PulseCareHub : Hub
             .SendAsync("ConversationRead", conversationId);
     }
 
-    public async Task Typing(Guid conversationId, Guid userId)
+    public async Task Typing(string conversationId, string userId)
     {
         await Clients.OthersInGroup(conversationId.ToString())
             .SendAsync("Typing", userId);
