@@ -12,4 +12,6 @@ public interface IUserRepository
     Task AddPatientAsync(Patient newPatient);
     Task<User?> GetUserByPatientIdAsync(Guid patientId);
     Task<User?> GetUserByDoctorIdAsync(Guid doctorId);
+    Task<Doctor?> GetDoctorFromUserAsync(Guid doctorId);
+    Task<Patient?> GetPatientAsync(Guid userId);
 }
