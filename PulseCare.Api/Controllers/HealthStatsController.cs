@@ -7,7 +7,7 @@ namespace PulseCare.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-// [Authorize]
+[Authorize]
 public class HealthStatsController : ControllerBase
 {
     private readonly IHealthStatRepository _repository;
