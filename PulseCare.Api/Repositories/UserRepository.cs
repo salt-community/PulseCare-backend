@@ -74,4 +74,22 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync(d => d.Id == doctorId);
         return doctor?.User;
     }
+
+    public async Task<Doctor?> GetDoctorFromUserAsync(Guid userId)
+    {
+        var doctor = await _context.Doctors
+            .Include(d => d.User)
+            .FirstOrDefaultAsync(d => d.UserId == userId);
+
+        return doctor;
+    }
+
+    public async Task<Patient?> GetPatientAsync(Guid userId)
+    {
+        var patient = await _context.Patients
+            .Include(d => d.User)
+            .FirstOrDefaultAsync(d => d.UserId == userId);
+
+        return patient;
+    }
 }
