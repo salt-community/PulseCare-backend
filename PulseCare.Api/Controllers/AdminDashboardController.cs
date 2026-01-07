@@ -7,16 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 [Authorize]
 public class AdminDashboardController(
     IAppointmentRepository appointmentRepository,
-    IPatientRepository patientRepository,
-    IConversationRepository conversationRepository,
-    IUserRepository userRepository
+    IPatientRepository patientRepository
 ) : ControllerBase
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
     private readonly IPatientRepository _patientRepository = patientRepository;
-    private readonly IConversationRepository _conversationRepository = conversationRepository;
-    private readonly IUserRepository _userRepository = userRepository;
-
 
 
     [Authorize(Roles = "admin")]
@@ -29,18 +24,12 @@ public class AdminDashboardController(
         if (clerkUserId == null)
             return Unauthorized();
 
-        var doctorUser = await _userRepository.GetUserAsync(clerkUserId);
-        var doctorProfile = await _userRepository.GetDoctorFromUserAsync(doctorUser.Id);
-        var doctorId = doctorProfile.Id;
         var patients = await _patientRepository.GetAllPatientsAsync();
         var appointments = await _appointmentRepository.GetDoctorsAppointmentsAsync(clerkUserId!);
-        var unreadMessages = await _conversationRepository.GetUnreadMessagesForDoctorAsync(doctorId);
-
 
         var dashboardDto = new AdminDashboardDto
         {
             TotalPatients = patients.Count(),
-            UnreadMessages = unreadMessages,
             TodayAppointments = appointments.Count(a => a.Date.Date == DateTime.Today),
             RecentPatients = appointments
                 .Where(a => a.Date.Date + a.Time <= DateTime.Now)
