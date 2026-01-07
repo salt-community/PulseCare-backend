@@ -36,8 +36,6 @@ public class PatientRepository : IPatientRepository
                  .ThenInclude(n => n.Doctor)
                      .ThenInclude(d => d.User)
              .FirstOrDefaultAsync(p => p.Id == patientId);
-
-
     }
 
     public async Task<Patient?> GetPatientByClerkIdAsync(string clerkId)
