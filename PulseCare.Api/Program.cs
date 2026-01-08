@@ -25,7 +25,6 @@ builder.Services.AddDbContext<PulseCareDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // SignalR
-// builder.Services.AddSignalR(); builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
