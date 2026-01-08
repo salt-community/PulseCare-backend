@@ -51,7 +51,9 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> IsExistingPatientAsync(string userId)
     {
-        return await _context.Patients.Include(p => p.User).AnyAsync(u => u.User.ClerkId == userId);
+        return await _context.Patients
+            .Include(p => p.User)
+            .AnyAsync(u => u.User.ClerkId == userId);
     }
 
     public async Task<bool> IsExistingDoctorAsync(Guid userId)
@@ -63,5 +65,39 @@ public class UserRepository : IUserRepository
     {
         _context.Patients.Add(patient);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<User?> GetUserByPatientIdAsync(Guid patientId)
+    {
+        var patient = await _context.Patients
+            .Include(p => p.User)
+            .FirstOrDefaultAsync(p => p.Id == patientId);
+        return patient?.User;
+    }
+
+    public async Task<User?> GetUserByDoctorIdAsync(Guid doctorId)
+    {
+        var doctor = await _context.Doctors
+            .Include(d => d.User)
+            .FirstOrDefaultAsync(d => d.Id == doctorId);
+        return doctor?.User;
+    }
+
+    public async Task<Doctor?> GetDoctorFromUserAsync(Guid userId)
+    {
+        var doctor = await _context.Doctors
+            .Include(d => d.User)
+            .FirstOrDefaultAsync(d => d.UserId == userId);
+
+        return doctor;
+    }
+
+    public async Task<Patient?> GetPatientAsync(Guid userId)
+    {
+        var patient = await _context.Patients
+            .Include(d => d.User)
+            .FirstOrDefaultAsync(d => d.UserId == userId);
+
+        return patient;
     }
 }
