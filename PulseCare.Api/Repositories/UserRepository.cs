@@ -12,9 +12,10 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task AddDoctorAsync(Doctor newAdmin)
+    public async Task AddDoctorAsync(Doctor newAdmin, User user)
     {
         _context.Doctors.Add(newAdmin);
+        _context.Users.Update(user);
         await _context.SaveChangesAsync();
     }
 

@@ -2,7 +2,7 @@ using PulseCare.API.Data.Entities.Users;
 
 public interface IUserRepository
 {
-    Task AddDoctorAsync(Doctor newAdmin);
+    Task AddDoctorAsync(Doctor newAdmin, User user);
     Task AddUserAsync(User user);
     Task<Patient?> GetPatientFromUserAsync(Guid userId);
     Task<Doctor?> GetDoctorWithClerkIdAsync(string clerkId);
