@@ -61,6 +61,7 @@ public class UsersController : ControllerBase
         }
 
         var newDoc = new Doctor { User = user, Specialty = "General" };
+        user.Role = UserRoleType.Doctor;
 
         await _userRepository.AddDoctorAsync(newDoc);
     }
