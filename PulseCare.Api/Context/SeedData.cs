@@ -140,6 +140,7 @@ public static class SeedData
                 Frequency = "Daily",
                 TimesPerDay = 1,
                 StartDate = DateTime.UtcNow.AddMonths(-2),
+                EndDate =  DateTime.UtcNow.AddMonths(1),
                 Instructions = "Take in the morning"
             },
             new Medication
@@ -151,6 +152,7 @@ public static class SeedData
                 Frequency = "Twice daily",
                 TimesPerDay = 2,
                 StartDate = DateTime.UtcNow.AddMonths(-1),
+                EndDate = DateTime.UtcNow.AddMonths(1),
                 Instructions = "Take with meals"
             }
         );
